@@ -1,0 +1,87 @@
+/**
+ * Importing the models files in the controller so that it can be used in
+ * In the functions which will be used as API in turn.
+*/
+const Product = require("../models/product");
+
+//Simple version, without validation or sanitation
+exports.test = function (req, res) 
+{
+    res.send("Greetings from the Test controller!");
+};
+
+/**
+ * This API will be used for inserting records in the DB.
+ * @param: req (Its the request object, which will carry the data from front end to back end)
+ * @param: res (Its the response object, which will take the response back to front end)
+*/
+exports.product_create = function (req, res) 
+{
+    let product = new Product
+    (
+        {
+            name: req.body.name,
+            price: req.body.price
+        }
+    );
+
+    product.save(function (err) 
+    {
+        if (err) 
+        {
+            return next(err);
+        }
+
+        res.send("Product Created successfully")
+    })
+};
+
+/**
+ * This API will be used for fetching records from the DB.
+ * @param: req (Its the request object, which will carry the data from front end to back end)
+ * @param: res (Its the response object, which will take the response back to front end)
+*/
+exports.product_details = function (req, res) 
+{
+    Product.findById(req.params.id, function (err, product) 
+    {
+        if (err)
+        {
+        	return next(err);
+        }
+
+        res.send(product);
+    })
+};
+
+
+exports.product_update = function (req, res) 
+{
+    Product.findByIdAndUpdate(req.params.id, 
+    {
+    	$set: req.body
+    }, 
+    function (err, product) 
+    {
+        if (err)
+        {
+        	return next(err);
+        }
+
+        res.send('Product udpated.');
+    });
+};
+
+
+exports.product_delete = function (req, res) 
+{
+    Product.findByIdAndRemove(req.params.id, function (err) 
+    {
+    	if (err)
+        {
+        	return next(err);
+        }
+        
+        res.send('Deleted successfully!');
+    })
+};
